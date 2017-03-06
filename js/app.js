@@ -1,79 +1,116 @@
-var game = (function(){
+//"use strict";
+
+function Gamer(gridSize, combination) {
+
+	this.gridSize = 3;
+	this.combination = [];
+	this.step = this.combination.length;
 	
-	var gamer = {
-		screenStart: $('#start'),
-		screenBoard: $('#board'),
-		screenFinish: $('#finish'),
-		currentPlayerO: true 
-	};
-
-	gamer.onStart = function(){
-		console.log( game.screenStart, 'Started' );
-		game.screenBoard.hide();
-		game.screenFinish.hide();
-		game.screenStart.show();
-	};
-
-	gamer.onBoard = function(){
-		console.log( game.screenBoard, 'Boarded' );
-		game.screenFinish.hide();
-		game.screenStart.hide();
-		game.screenBoard.show();
-	};
-
-	gamer.onFinish = function(){
-		console.log( game.screenFinish, 'Finished' );
-		game.screenStart.hide();
-		game.screenBoard.hide();
-		game.screenFinish.show();
-	};
-
-	gamer.currentPlayer = function(){
-		var check = $('.players').eq(0).hasClass('active');
-		if(check){ 
-			gamer.currentPlayerO = true;
-			$('.boxes').removeClass('for-X').addClass('for-O');
-		}else{
-			gamer.currentPlayerO = false;
-			$('.boxes').removeClass('for-O').addClass('for-X');
+	this.grid = [];
+	for(var x=1; x<=this.gridSize; x++){
+		this.grid[x] = [];
+		for(var y=1; y<=this.gridSize; y++){
+			this.grid[x][y] = "("+ x + "," + y +")";
 		}
-	};
-
-	gamer.move = function(){
-		var player1 = [];
-		var player2 = [];
-		var winRow1 = [11,12,13];
-		var winRow2 = [21,22,23];
-		var winRow3 = [31,32,33];
-		var winCol1 = [11,21,31];
-		var winCol2 = [12,22,32];
-		var winCol3 = [13,23,33];
-		var winDia1 = [11,21,33];
-		var winDia2 = [13,22,31];
-	};
-
-	return gamer;
-
-}());
-
-game.onStart();
-
-$('.screen-start').find('a').on('click', function(){
-	game.onBoard();
-	game.currentPlayer();
-});
-
-$('.box').on('click', function(){
-	$this = $(this);
-	var boxNo = $this.attr('class');
-
-	if(game.currentPlayerO){ 
-		$this.removeClass('empty').addClass('box-filled-1');
-		$('.players').eq(0).removeClass('active').end().eq(1).addClass('active'); 
-		game.currentPlayer();
-	}else{ 
-		$this.removeClass('empty').addClass('box-filled-2');
-		$('.players').eq(1).removeClass('active').end().eq(0).addClass('active'); 
-		game.currentPlayer();
 	}
-});
+
+	this.gameEnd = false;
+
+}
+
+Gamer.prototype.setValues = function(x,y){
+	if(this.grid[x][y].search(/true/i) === -1){
+		this.step++;
+		this.grid[x][y] = "("+ x + "," + y +")" + " : true" ;
+		this.combination.push(this.grid[x][y]);
+		if(this.step >= this.gridSize){
+			Gamer.prototype.checkValues(this.combination);
+		}
+	}else{
+		return false;
+	}
+};
+
+Gamer.prototype.straights = function(strCut, axis, combo){
+
+	var playerCombo = [];
+	for(x=0; x<combo.length; x++){
+		playerCombo[x] = combo[x].substr(strCut,1);
+	}
+
+	var repeat = [], counts = [], prev;
+	playerCombo.sort();
+  for(var j = 0; j < playerCombo.length; j++){
+      if(playerCombo[j] !== prev) {
+        repeat.push(playerCombo[j]); counts.push(1);
+      }else{
+        counts[counts.length-1]++;
+      }
+      prev = playerCombo[j];
+  } 
+
+  if (counts.indexOf(3) !== -1){ 
+  	console.log('Won with a ' + axis +' Match');
+  	this.gameEnd = true;
+  }
+
+};
+
+Gamer.prototype.diagonals = function(combo){
+
+	var xAxis, yAxis, same = 0;
+	for(x=0; x<combo.length; x++){
+		xAxis = m.combination[x].substr(1,1);
+		yAxis = m.combination[x].substr(3,1);
+		if(xAxis === yAxis){ same++; }
+	}
+	if(same === 3){
+		console.log('Won with a diagonal Match');
+  	this.gameEnd = true;
+	}
+
+};
+
+Gamer.prototype.antiDiagonals = function(combo){
+
+	var antiD = {}, AxAxis = [], AyAxis = [], same = 0;
+
+	antiD.xAxis = [];
+	for(var x=1; x<=3; x++){
+		antiD.xAxis.push(x);
+	}
+
+	antiD.yAxis = [];
+	for(var y=3; y>=1; y--){
+		antiD.yAxis.push(y);
+	}
+
+	for(x=0; x<antiD.xAxis.length; x++){
+		AxAxis[x] = antiD.xAxis[x];
+		AyAxis[x] = antiD.yAxis[x];
+	}
+
+	for(x=0; x<combo.length; x++){
+		xAxis = m.combination[x].substr(1,1);
+		yAxis = m.combination[x].substr(3,1);
+		if(parseInt(xAxis) === AxAxis[x] && parseInt(yAxis) === AyAxis[x]){
+			same++;
+		}
+	}
+	
+	if(same === 3){
+		console.log('Won with a Anti diagonal Match');
+  	this.gameEnd = true;
+	}
+
+};
+
+Gamer.prototype.checkValues = function(combo){
+	Gamer.prototype.straights(3,'Horizontal', combo);
+	Gamer.prototype.straights(1,'Vertical', combo);
+	Gamer.prototype.diagonals(combo);
+	Gamer.prototype.antiDiagonals(combo);
+};
+
+var player1 = new Gamer();
+var player2 = new Gamer();
