@@ -150,4 +150,25 @@ h1 {
       background-color: #3688C3;
       background-image: url(../img/x.svg); }
 
+#finish .message{
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain; 
+}
+
+#finish.winnerO{
+  background-color: #FFA000;
+}
+#finish.winnerX{
+  background-color: #3688C3;
+}
+
+.winnerO .message{
+  background-image: url(../img/o-black.svg);
+}
+
+.winnerX .message{
+  background-image: url(../img/x-black.svg);
+}
+
 
