@@ -21,7 +21,7 @@ function Gamer(gridSize, combination) {
 Gamer.prototype.setValues = function(x,y, player){
 
 	this.currentPlayer = player;
-	//console.log(this.currentPlayer);
+	console.log(this.grid[x][y], this.currentPlayer);
 
 	if(this.grid[x][y].search(/true/i) === -1){
 		this.step++;
@@ -56,8 +56,9 @@ Gamer.prototype.straights = function(strCut, axis, combo, player){
   } 
 
   if (counts.indexOf(3) !== -1){ 
+  	this.gameEnd = true;
   	console.log(this.currentPlayer + ' Won with a ' + axis +' Match');
-  	gameUI.finishGame(this.currentPlayer);
+  	game.finishGame(this.currentPlayer);
   }
 
 };
@@ -73,52 +74,9 @@ Gamer.prototype.diagonals = function(combo, player){
 		if(xAxis === yAxis){ same++; }
 	}
 	if(same === 3){
+		this.gameEnd = true;
 		console.log(this.currentPlayer + ' Won with a diagonal Match');
-  	gameUI.finishGame(this.currentPlayer);
-	}
-
-};
-
-Gamer.prototype.antiDiagonals = function(combo, player){
-
-	this.currentPlayer = player;
-
-	var antiD = {}, AxAxis = [], AyAxis = [], same = 0;
-
-	antiD.xAxis = [];
-	for(var x=1; x<=3; x++){
-		antiD.xAxis.push(x);
-	}
-
-	antiD.yAxis = [];
-	for(var y=3; y>=1; y--){
-		antiD.yAxis.push(y);
-	}
-
-	for(x=0; x<antiD.xAxis.length; x++){
-		AxAxis[x] = antiD.xAxis[x];
-		AyAxis[x] = antiD.yAxis[x];
-	}
-
-	//console.log(combo);
-
-	for(x=0; x<combo.length; x++){
-		console.log(x);
-		antiD.xAxis[x] = combo[x].substr(1,1);
-		antiD.yAxis[x] = combo[x].substr(3,1);
-		if( (parseInt(antiD.xAxis[x]) === AxAxis[x] && parseInt(antiD.yAxis[x]) === AyAxis[x]) || 
-				(parseInt(antiD.xAxis[x]) === AyAxis[x] && parseInt(antiD.yAxis[x]) === AxAxis[x])
-			) {
-			same++;
-			//console.log(same);
-		}
-	}
-	
-	console.log(antiD.xAxis, AxAxis, antiD.yAxis, AyAxis);
-	
-	if(same === 3){
-		console.log(this.currentPlayer + ' Won with a Anti diagonal Match');
-  	gameUI.finishGame(Gamer.currentPlayer);
+  	game.finishGame(this.currentPlayer);
 	}
 
 };
@@ -127,8 +85,6 @@ Gamer.prototype.checkValues = function(combo, player){
 	Gamer.prototype.straights(3,'Vertical', combo, player);
 	Gamer.prototype.straights(1,'Horizontal', combo, player);
 	Gamer.prototype.diagonals(combo, player);
-	Gamer.prototype.antiDiagonals(combo, player);
 };
 
-var player1 = new Gamer();
-var player2 = new Gamer();
+game.startGame();
